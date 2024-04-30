@@ -11,7 +11,7 @@
     <!-- 主体内容 -->
     <el-row>
       <!-- title -->
-      <div class="modt-box">用户管理</div>
+      <div class="modt-box">菜单管理</div>
       <el-col :span="4"> </el-col>
       <el-col :span="6">
         <div class="mod-btnbox">
@@ -64,10 +64,11 @@ export default {
   data() {
     return {
       showdelete: false,
+      checkVal: [],
       treeData: [],
       defaultProps: {
-        children: 'children',
-        label: 'name'
+        children: 'menus',
+        label: 'menuname'
       },
       form: {
         addUser: '',
@@ -118,82 +119,81 @@ export default {
    * 里面的方法只有被调用才会执行
    */
   methods: {
-    // 获取数据
+    //获取数据
     getdata() {
       ModuleList()
         .then(res => {
-          this.treeData = [
-            {
-              id: 1,
-              pId: 0,
-              name: '平台顶级',
-              open: true,
-              checked: false
-            },
-            {
-              id: 2,
-              pId: 1,
-              name: '一层',
-              open: true,
-              checked: false
-            },
-            {
-              id: 3,
-              pId: 1,
-              name: '一层',
-              open: true,
-              checked: false
-            },
-            {
-              id: 12,
-              pId: 1,
-              name: '一层',
-              open: true,
-              checked: false
-            },
-            {
-              id: 13,
-              pId: 1,
-              name: '一层',
-              open: true,
-              checked: false
-            },
-            {
-              id: 17,
-              pId: 1,
-              name: '一层',
-              open: true,
-              checked: false
-            },
-            {
-              id: 4,
-              pId: 2,
-              name: '一层',
-              open: true,
-              checked: false
-            },
-            {
-              id: 5,
-              pId: 2,
-              name: '一层',
-              open: true,
-              checked: false
-            },
-            {
-              id: 6,
-              pId: 2,
-              name: '一层',
-              open: true,
-              checked: false
-            },
-            {
-              id: 7,
-              pId: 2,
-              name: '一层',
-              open: true,
-              checked: false
-            }
-          ]
+          this.treeData = res.data;
+            // {
+            //   id: 1,
+            //   pId: 0,
+            //   name: '平台顶级',
+            //   open: true,
+            //   checked: false
+            // },
+            // {
+            //   id: 2,
+            //   pId: 1,
+            //   name: '一层',
+            //   open: true,
+            //   checked: false
+            // },
+            // {
+            //   id: 3,
+            //   pId: 1,
+            //   name: '一层',
+            //   open: true,
+            //   checked: false
+            // },
+            // {
+            //   id: 12,
+            //   pId: 1,
+            //   name: '一层',
+            //   open: true,
+            //   checked: false
+            // },
+            // {
+            //   id: 13,
+            //   pId: 1,
+            //   name: '一层',
+            //   open: true,
+            //   checked: false
+            // },
+            // {
+            //   id: 17,
+            //   pId: 1,
+            //   name: '一层',
+            //   open: true,
+            //   checked: false
+            // },
+            // {
+            //   id: 4,
+            //   pId: 2,
+            //   name: '一层',
+            //   open: true,
+            //   checked: false
+            // },
+            // {
+            //   id: 5,
+            //   pId: 2,
+            //   name: '一层',
+            //   open: true,
+            //   checked: false
+            // },
+            // {
+            //   id: 6,
+            //   pId: 2,
+            //   name: '一层',
+            //   open: true,
+            //   checked: false
+            // },
+            // {
+            //   id: 7,
+            //   pId: 2,
+            //   name: '一层',
+            //   open: true,
+            //   checked: false
+            // }
         })
         .catch(err => {
           this.loading = false
@@ -236,12 +236,22 @@ export default {
     },
     // 复选变单选
     handleClick(data, checked, node) {
-      if (checked) {
-        this.$refs.tree.setCheckedNodes([])
-        this.$refs.tree.setCheckedNodes([data])
-        this.showdelete = true
-      } else {
-      }
+
+        if(checked){
+          this.checkVal.push(data.meuid);
+          this.showdelete=true
+
+        }else {
+          console.log("取消点了")
+          let newCheckVal = [];
+          for (let item of this.checkVal) {
+            if (item != data.meuid) {
+              newCheckVal.push(item)
+            }
+          }
+          this.checkVal = newCheckVal;
+        }
+
     },
     // 点击节点
     nodeclick(arr, node, self) {
@@ -276,11 +286,12 @@ export default {
     },
     // 删除菜单
     deleteModule() {
-      ModuleDelete(this.form.moduleId)
+      ModuleDelete(this.checkVal)
         .then(res => {
           this.getdata()
           this.getmenu()
           this.$message.error('菜单管理列表删除成功！')
+          this.checkVal=[];
         })
         .catch(err => {
           this.$message.error('菜单管理列表删除失败，请稍后再试！')
@@ -327,5 +338,4 @@ export default {
   width: 100%;
 }
 </style>
- 
- 
+

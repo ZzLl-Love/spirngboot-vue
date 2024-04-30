@@ -10,7 +10,7 @@
     </el-breadcrumb>
     <!-- 搜索筛选 -->
     <el-form :inline="true" :model="formInline" class="user-search">
-      <el-form-item label="搜索：">
+      <el-form-item label="搜索">
         <el-input size="small" v-model="formInline.deptName" placeholder="输入部门名称"></el-input>
       </el-form-item>
       <el-form-item label="">
@@ -24,6 +24,8 @@
     <!--列表-->
     <el-table size="small" :data="listData" highlight-current-row v-loading="loading" border element-loading-text="拼命加载中" style="width: 100%;">
       <el-table-column align="center" type="selection" width="60">
+      </el-table-column>
+      <el-table-column sortable prop="deptId" label="部门id" width="300">
       </el-table-column>
       <el-table-column sortable prop="deptName" label="部门名称" width="300">
       </el-table-column>
@@ -88,11 +90,12 @@ export default {
         deptNo: [{ required: true, message: '请输入部门代码', trigger: 'blur' }]
       },
       formInline: {
-        page: 1,
-        limit: 10,
-        varLable: '',
-        varName: '',
-        token: localStorage.getItem('logintoken')
+        // page: 1,
+        // limit: 10,
+        deptName: '',
+        deptNo: '',
+        deptId: ''
+        // token: localStorage.getItem('logintoken')
       },
       // 删除部门
       seletedata: {
@@ -121,6 +124,7 @@ export default {
    * 创建完毕
    */
   created() {
+
     this.getdata(this.formInline)
   },
 
@@ -132,94 +136,96 @@ export default {
     getdata(parameter) {
       this.loading = true
       // 模拟数据
-      let res = {
-        code: 0,
-        msg: null,
-        count: 5,
-        data: [
-          {
-            addUser: null,
-            editUser: null,
-            addTime: 1521062371000,
-            editTime: 1526700200000,
-            deptId: 2,
-            deptName: '上海分公司',
-            deptNo: '1',
-            parentId: 1
-          },
-          {
-            addUser: null,
-            editUser: null,
-            addTime: 1521063247000,
-            editTime: 1526652291000,
-            deptId: 3,
-            deptName: '上海测试',
-            deptNo: '02',
-            parentId: 1
-          },
-          {
-            addUser: null,
-            editUser: null,
-            addTime: 1526349555000,
-            editTime: 1526349565000,
-            deptId: 12,
-            deptName: '1',
-            deptNo: '11',
-            parentId: 1
-          },
-          {
-            addUser: null,
-            editUser: null,
-            addTime: 1526373178000,
-            editTime: 1526373178000,
-            deptId: 13,
-            deptName: '5',
-            deptNo: '5',
-            parentId: 1
-          },
-          {
-            addUser: null,
-            editUser: null,
-            addTime: 1526453107000,
-            editTime: 1526453107000,
-            deptId: 17,
-            deptName: 'v',
-            deptNo: 'v',
-            parentId: 1
-          }
-        ]
-      }
-      this.loading = false
-      this.listData = res.data
+      //   let res = {
+      //     code: 0,
+      //     msg: null,
+      //     count: 5,
+      //     data: [
+      //       {
+      //         addUser: null,
+      //         editUser: null,
+      //         addTime: 1521062371000,
+      //         editTime: 1526700200000,
+      //         deptId: 2,
+      //         deptName: '上海分公司',
+      //         deptNo: '1',
+      //         parentId: 1
+      //       },
+      //       {
+      //         addUser: null,
+      //         editUser: null,
+      //         addTime: 1521063247000,
+      //         editTime: 1526652291000,
+      //         deptId: 3,
+      //         deptName: '上海测试',
+      //         deptNo: '02',
+      //         parentId: 1
+      //       },
+      //       {
+      //         addUser: null,
+      //         editUser: null,
+      //         addTime: 1526349555000,
+      //         editTime: 1526349565000,
+      //         deptId: 12,
+      //         deptName: '1',
+      //         deptNo: '11',
+      //         parentId: 1
+      //       },
+      //       {
+      //         addUser: null,
+      //         editUser: null,
+      //         addTime: 1526373178000,
+      //         editTime: 1526373178000,
+      //         deptId: 13,
+      //         deptName: '5',
+      //         deptNo: '5',
+      //         parentId: 1
+      //       },
+      //       {
+      //         addUser: null,
+      //         editUser: null,
+      //         addTime: 1526453107000,
+      //         editTime: 1526453107000,
+      //         deptId: 17,
+      //         deptName: 'v',
+      //         deptNo: 'v',
+      //         parentId: 1
+      //       }
+      //     ]
+      //   }
+      //   this.loading = false
+      //   this.listData = res.data
       // 分页赋值
-      this.pageparm.currentPage = this.formInline.page
-      this.pageparm.pageSize = this.formInline.limit
-      this.pageparm.total = res.count
+      // this.pageparm.currentPage = this.formInline.page
+      // this.pageparm.pageSize = this.formInline.limit
+      // this.pageparm.total = res.count
       // 模拟数据结束
 
       /***
        * 调用接口，注释上面模拟数据 取消下面注释
        */
-      // deptList(parameter)
-      //   .then(res => {
-      //     this.loading = false
-      //     if (res.success == false) {
-      //       this.$message({
-      //         type: 'info',
-      //         message: res.msg
-      //       })
-      //     } else {
-      //       this.listData = res.data
-      //       // 分页赋值
-      //       this.pageparm.currentPage = this.formInline.page
-      //       this.pageparm.pageSize = this.formInline.limit
-      //       this.pageparm.total = res.count
-      //     }
-      //   })
-      //   .catch(err => {
-      //     this.loading = false
-      //     this.$message.error('菜单加载失败，请稍后再试！')
-      //   })
+      deptList(parameter)
+        .then(res => {
+
+
+          this.loading = false
+          if (res.code != 200) {
+            this.$message({
+              type: 'info',
+              message: res.message
+            })
+          } else {
+            this.listData = res.data
+            // 分页赋值
+            this.pageparm.currentPage = this.formInline.page
+            this.pageparm.pageSize = this.formInline.limit
+            this.pageparm.total = res.count
+          }
+        })
+        .catch(err => {
+          this.loading = false
+          this.$message.error('菜单加载失败，请稍后再试！')
+        })
     },
     // 分页插件事件
     callFather(parm) {
@@ -254,16 +260,17 @@ export default {
             .then(res => {
               this.editFormVisible = false
               this.loading = false
-              if (res.success) {
+              if (res.code ===200) {
+                console.log("到这里来了...")
                 this.getdata(this.formInline)
                 this.$message({
                   type: 'success',
-                  message: '公司保存成功！'
+                  message: res.message
                 })
               } else {
                 this.$message({
                   type: 'info',
-                  message: res.msg
+                  message: res.message
                 })
               }
             })
@@ -287,7 +294,7 @@ export default {
         .then(() => {
           deptDelete(row.deptId)
             .then(res => {
-              if (res.success) {
+              if (res.code ==200) {
                 this.$message({
                   type: 'success',
                   message: '公司已删除!'
@@ -329,4 +336,3 @@ export default {
 }
 </style>
 
- 

@@ -24,6 +24,7 @@
         <navcon></navcon>
       </el-header>
       <el-main clss="index-main">
+<!--        是在这里就行渲染不同菜单的内容的-->
         <router-view></router-view>
       </el-main>
     </el-container>
@@ -70,7 +71,7 @@ export default {
   }
 }
 </script>
-<style >
+<style  >
 .index-con {
   height: 100%;
   width: 100%;

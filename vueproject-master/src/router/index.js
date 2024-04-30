@@ -10,6 +10,9 @@ import index from '@/views/index';
  */
 // 商品管理
 import Goods from '@/views/goods/Goods';
+
+//库存管理
+import Stock from "../views/goods/Stock.vue";
 // 机器信息管理
 import Machine from '@/views/machine/Machine';
 // 货道信息管理
@@ -53,7 +56,7 @@ import statistics from '@/views/charts/statistics';
 // 启用路由
 Vue.use(Router);
 
-// 导出路由 
+// 导出路由
 export default new Router({
     routes: [{
         path: '/',
@@ -78,12 +81,22 @@ export default new Router({
         iconCls: 'el-icon-tickets',
         children: [{
             path: '/goods/Goods',
-            name: '商品管理',
+            name: '基础管理',
             component: Goods,
             meta: {
                 requireAuth: true
             }
-        }, {
+          },
+            {
+              path: '/goods/stock',
+              name: '库存管理',
+              component: Stock,
+              meta: {
+                requireAuth: true
+              }
+            },
+
+          {
             path: '/machine/Machine',
             name: '机器信息管理',
             component: Machine,

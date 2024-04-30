@@ -10,10 +10,12 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@zxing/library": "^0.15.1",
     "echarts": "^4.2.0-rc.2",
     "element-ui": "^2.3.2",
     "http-proxy-middleware": "^0.18.0",
     "js-md5": "^0.7.3",
+    "quagga": "^0.12.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"

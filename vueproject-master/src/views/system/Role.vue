@@ -132,8 +132,8 @@ export default {
       // 数据权限
       RoleRight: [],
       RoleRightProps: {
-        children: 'children',
-        label: 'name'
+        children: 'menus',
+        label: 'menuname'
       },
       // 选中
       checkmenu: [],
@@ -336,6 +336,8 @@ export default {
     },
     // 删除角色
     deleteUser(index, row) {
+      console.log("delete",index);
+      console.log("delete",row);
       this.$confirm('确定要删除吗?', '信息', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -371,21 +373,29 @@ export default {
     },
     // 数据权限
     menuAccess: function(index, row) {
+
+
+      console.log("index",index)
+      console.log("row",row)
       this.menuAccessshow = true
       this.saveroleId = row.roleId
       RoleRightTree(row.roleId)
         .then(res => {
-          if (res.data.success) {
+
+          if (res.data.code === 200) {
             this.$message({
               type: 'success',
               message: '获取权限成功'
             })
-            this.changemenu(res.data.data)
-            this.RoleRight = this.changeArr(res.data.data)
+
+            this.RoleRight = res.data.data
+
+
           } else {
+            this.menuAccessshow = false;
             this.$message({
               type: 'info',
-              message: res.data.msg
+              message: res.data.message
             })
           }
         })
@@ -396,12 +406,15 @@ export default {
     },
     // 选中菜单
     changemenu(arr) {
+
       let change = []
       for (let i = 0; i < arr.length; i++) {
         if (arr[i].checked) {
           change.push(arr[i].id)
         }
+        change.push(arr[i].meuid);
       }
+      console.log(change);
       this.checkmenu = change
     },
     // tree 递归
@@ -455,9 +468,9 @@ export default {
       let moduleIds = []
       if (node.length != 0) {
         for (let i = 0; i < node.length; i++) {
-          moduleIds.push(node[i].id)
+          moduleIds.push(node[i].meuid)
         }
-        parm.moduleIds = JSON.stringify(moduleIds)
+        parm.moduleIds = moduleIds;
       }
       RoleRightSave(parm)
         .then(res => {

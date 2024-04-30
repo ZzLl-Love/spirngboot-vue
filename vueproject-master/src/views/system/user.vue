@@ -84,12 +84,21 @@
         <el-form-item label="姓名" prop="userName">
           <el-input size="small" v-model="editForm.userName" auto-complete="off" placeholder="请输入姓名"></el-input>
         </el-form-item>
+<!--        角色下拉框-->
         <el-form-item label="角色" prop="roleId">
           <el-select size="small" v-model="editForm.roleId" placeholder="请选择" class="userRole">
-            <el-option label="公司管理员" value="1"></el-option>
-            <el-option label="普通用户" value="2"></el-option>
+<!--            <el-option label="公司管理员" value="1"></el-option>-->
+<!--            <el-option label="普通用户" value="2"></el-option>-->
+            <el-option v-for="option in allRoles" :key="option.roleId" :label="option.roleName" :value="option.roleId"/>
           </el-select>
         </el-form-item>
+<!--        部门选择下拉框-->
+        <el-form-item label="部门" prop="deptId">
+          <el-select size="small" v-model="editForm.deptId" placeholder="请选择" class="userRole">
+            <el-option v-for="option in allDept" :key="option.deptId" :label="option.deptName" :value="option.deptId"/>
+          </el-select>
+        </el-form-item>
+
         <el-form-item label="手机号" prop="phone">
           <el-input size="small" v-model="editForm.phone" placeholder="请输入手机号"></el-input>
         </el-form-item>
@@ -142,12 +151,20 @@ import {
   UserDeptSave,
   UserDeptdeptTree,
   UserChangeDept,
+  roleList,
+  // 查询部门信息
+  deptList
 
 } from '../../api/userMG'
 import Pagination from '../../components/Pagination'
 export default {
   data() {
     return {
+
+      //zz
+      allRoles:[], //存储所有的角色信息
+      allDept:[], //所有的部门信息
+
       nshow: true, //switch开启
       fshow: false, //switch关闭
       loading: false, //是显示加载
@@ -164,6 +181,7 @@ export default {
         phone: '',
         mail: '',
         sex: '',
+        deptId: '',
         token: localStorage.getItem('logintoken')
       },
       // 部门参数
@@ -260,13 +278,44 @@ export default {
    * 创建完毕
    */
   created() {
+
     this.getdata(this.formInline)
+
+    //获取所有的角色信息
+    this.getAllRoles();
+
+    //获取所有的部门信息
+    this.getDeptInfo();
   },
 
   /**
    * 里面的方法只有被调用才会执行
    */
   methods: {
+
+    //获取所有的角色信息
+    getAllRoles(){
+      roleList().then( res =>{
+        if(res.code ==200){
+          this.allRoles = res.data
+        }else{
+          console.log("在菜单管理中点击编辑菜单的时无法查询角色信息")
+        }
+      })
+    },
+
+    //获取部门信息
+    getDeptInfo(){
+      deptList().then(res =>{
+        if(res.code ==200){
+          this.allDept = res.data;
+          console.log("用户管理功能中的部门数据",res.data)
+        }else{
+          console.log("用户管理功能中获取部门信息失败")
+        }
+      })
+    },
+
     // 获取数据方法
     getdata(parameter) {
       this.loading = true
@@ -286,6 +335,7 @@ export default {
           })
         } else {
           this.userData = res.data
+          // console.log("this.userData",this.userData)
           // 分页赋值
           // this.pageparm.currentPage = this.formInline.page
           // this.pageparm.pageSize = this.formInline.limit
@@ -337,8 +387,12 @@ export default {
     },
     //显示编辑界面
     handleEdit: function(index, row) {
+
       this.editFormVisible = true
       if (row != undefined && row != 'undefined') {
+
+        console.log("编辑用户界面",row);
+
         this.title = '修改用户'
         this.editForm.id = row.id
         this.editForm.nickName = row.nickName
@@ -347,7 +401,9 @@ export default {
         this.editForm.phone = row.phone
         this.editForm.mail = row.mail
         this.editForm.sex = row.sex
+        this.editForm.deptId = row.deptId
       } else {
+        console.log("添加用户界面",row);
         this.title = '添加用户'
         this.editForm.userId = ''
         this.editForm.nickName = ''
@@ -397,6 +453,7 @@ export default {
               })
           } else if (this.title === "添加用户"){
              //调用添加接口
+            this.editForm.id = ""
             addUser(this.editForm).then(res =>{
               this.editFormVisible =false
               this.loading = false

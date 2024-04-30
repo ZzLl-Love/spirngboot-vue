@@ -1,6 +1,6 @@
 /**
 * 图表界面
-*/ 
+*/
 <template>
   <!-- 组件主盒子 -->
   <div class="stbox">
@@ -82,13 +82,17 @@
 </template>
 <script type="text/ecmascript-6">
 import Chart from 'echarts'
+import {
+  getTop5,
+  getLoginUserTop5
+} from '../../api/userMG'
 export default {
   name: "welcome",
   data() {
     return {
       machineNo: '',
       type: 'day',
-      //  销售总笔数 
+      //  销售总笔数
       SCEoption: {
         tooltip: {
           trigger: 'item',
@@ -181,7 +185,7 @@ export default {
           }
         }]
       },
-      //  销售总金额 
+      //  销售总金额
       SUMoption: {
         tooltip: {
           trigger: 'item',
@@ -330,11 +334,11 @@ export default {
           }
         }]
       },
-      //  支付方式统计
+      //  支付方式统计  todo  登录用户前五名
       payoption: {
         backgroundColor: '#2c343c',
         title: {
-          text: '支付方式统计(金额)',
+          text: '登录用户前五名(次数)',
           left: 10,
           top: 5,
           textStyle: {
@@ -358,16 +362,16 @@ export default {
         },
         series: [
           {
-            name: '支付方式统计(金额)',
+            name: '登录用户前五名(次数)',
             type: 'pie',
             radius: '55%',
             center: ['50%', '50%'],
             data: [
-              { value: 335, name: '支付宝' },
-              { value: 310, name: '银商二维码' },
-              { value: 274, name: '会员' },
-              { value: 235, name: '微信支付' },
-              { value: 100, name: 'Pos通' }
+              // { value: 335, name: '支付宝' },
+              // { value: 310, name: '银商二维码' },
+              // { value: 274, name: '会员' },
+              // { value: 235, name: '微信支付' },
+              // { value: 100, name: 'Pos通' }
             ].sort(function (a, b) { return a.value - b.value; }),
             roseType: 'radius',
             label: {
@@ -403,10 +407,13 @@ export default {
           }
         ]
       },
+
+      //todo  出库物品前五名展示
       payNumoption: {
         backgroundColor: '#2c343c',
         title: {
-          text: '支付方式统计(笔数)',
+          // text: '支付方式统计(笔数)',
+          text: '出库物品前五名展示',
           left: 10,
           top: 5,
           textStyle: {
@@ -430,16 +437,12 @@ export default {
         },
         series: [
           {
-            name: '支付方式统计(笔数)',
+            name: '出库物品前五名展示(笔数)',
             type: 'pie',
             radius: '55%',
             center: ['50%', '50%'],
             data: [
-              { value: 335, name: '支付宝' },
-              { value: 310, name: '银商二维码' },
-              { value: 274, name: '会员' },
-              { value: 235, name: '微信支付' },
-              { value: 100, name: 'Pos通' }
+
             ].sort(function (a, b) { return a.value - b.value; }),
             roseType: 'radius',
             label: {
@@ -482,14 +485,17 @@ export default {
     // 点聚合组件
   },
   // 创建完毕状态(里面是操作)
-  created() { },
+  created() {
+    this.getLoginTop5()
+    this.getTop5Data()
+    console.log("create 完成。。。。 ",this.payNumoption.series[0].data)
+  },
   // 挂载结束状态(里面是操作)
   mounted() {
     this.getSCE()
     this.getSUM()
     this.getClick()
     this.getpay()
-    this.getpayNum()
   },
   // 里面的函数只有调用才会执行
   methods: {
@@ -517,6 +523,63 @@ export default {
     getpayNum() {
       this.chart = Chart.init(this.$refs.payNumEchart)
       this.chart.setOption(this.payNumoption)
+    },
+
+    //查询出库信息前5名的数据 ，并更新图表
+    getTop5Data() {
+      getTop5()
+        .then(res => {
+          if (res.code ===200) {
+            this.$message({
+              type: 'success',
+              message: res.message
+            });
+
+            // 更新 echarts 图表的数据
+
+            const transformedData = res.data.map(item => ({
+              value: item.inventoryRemove,
+              name: item.name
+            }));
+
+            this.payNumoption.series[0].data = transformedData;
+            this.getpayNum()
+          } else {
+            this.$message.error(res.message);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          this.$message.error('获取数据失败，请稍后再试！');
+        });
+    },
+
+    //查询登录用户top5排名
+    getLoginTop5(){
+      getLoginUserTop5()
+        .then(res => {
+          if (res.code ===200) {
+            this.$message({
+              type: 'success',
+              message: res.message
+            });
+
+            // 更新 echarts 图表的数据
+            const transformedData = Object.entries(res.data).map(([name, value]) => ({
+              name: name,
+              value: value
+            }));
+
+            this.payoption.series[0].data = transformedData;
+            this.getpay()
+          } else {
+            this.$message.error(res.message);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          this.$message.error('获取数据失败，请稍后再试！');
+        });
     }
 
   }
